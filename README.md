@@ -58,7 +58,11 @@ The objective is to design an **adaptive decision engine** capable of continuous
 
 <!-- 🔽 SCREENSHOT — Replace with screenshot of the problem context or infographic -->
 <p align="center">
-  <img src="docs/images/problem_context.png" alt="Problem Statement Infographic" width="700">
+ <img width="598" height="420" alt="image" src="https://github.com/user-attachments/assets/a9c5bbec-fd75-4869-a2f4-f1f0f163b02b" />
+
+https://github.com/user-attachments/assets/bcbcf888-7b5f-4a61-85c7-9cccc6408383
+
+
 </p>
 
 ---
@@ -76,8 +80,7 @@ We leverage **Unity (URP)** for high-performance 3D visualization and mathematic
 
 <!-- 🔽 SCREENSHOT — Replace with a wide shot of the running simulation -->
 <p align="center">
-  <img src="docs/images/simulation_overview.png" alt="Simulation Overview — City with agents" width="800">
-  <br/>
+ <img width="1599" height="754" alt="image" src="https://github.com/user-attachments/assets/7d005abb-1137-4dc9-8e69-89fb5da1d74b" />
   <sub><i>400 agents navigating a procedurally generated city with buildings, barriers, and grid-based streets</i></sub>
 </p>
 
@@ -228,11 +231,7 @@ $$m_i = \begin{cases} 0.5 & \text{if } a_i < 12 \text{ (children)} \\ 2.5 & \tex
 | ⚫ Black | **Dead** | Deceased — agent stops moving permanently |
 
 <!-- 🔽 GIF — Replace with a recording showing color transitions during an outbreak -->
-<p align="center">
-  <img src="docs/images/color_transitions.gif" alt="Agent color transitions during outbreak" width="600">
-  <br/>
-  <sub><i>Agents transition through SEIQR states — watch green → yellow → red → grey/black</i></sub>
-</p>
+![giphy-ezgif com-gif-maker](https://github.com/user-attachments/assets/24561cee-98bc-4097-b64e-e80e4956daa6)
 
 ### 📊 Simulation Parameters
 
@@ -263,15 +262,6 @@ $$m_i = \begin{cases} 0.5 & \text{if } a_i < 12 \text{ (children)} \\ 2.5 & \tex
 ### Milestone 3: Visual Clarity & Spatial Arrangement
 - **The Problem:** Initially, the city grid generated massive, dense arrays of physical skyscrapers that obscured the agents, making it chaotic to debug transmission waves.
 - **The Solution:** We restricted physical building generation strictly to the perimeter of the field, clearing out a spacious "central plateau" for observation. We further reworked shader colors mapping to the disease states (e.g., Susceptible is neon green, Infectious is pure red, Dead is pitch black), ensuring outbreaks are visually distinct the absolute second they emerge.
-
-<!-- 🔽 SCREENSHOTS — Replace with before/after shots of visual clarity improvements -->
-<p align="center">
-  <img src="docs/images/milestone_visual_before.png" alt="Before — cluttered city" width="380">
-  &nbsp;&nbsp;
-  <img src="docs/images/milestone_visual_after.png" alt="After — clean central plateau" width="380">
-  <br/>
-  <sub><i>Left: Early cluttered layout — Right: Final design with perimeter buildings and clear observation area</i></sub>
-</p>
 
 ---
 
