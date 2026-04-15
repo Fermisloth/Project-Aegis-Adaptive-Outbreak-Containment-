@@ -15,11 +15,7 @@ Project Aegis: Adaptive outbreak containment for #ROVOTINKERQUEST. Employs Hiera
 </p>
 
 <!-- 🔽 HERO IMAGE / GIF — Replace with actual screenshot or recording -->
-<p align="center">
-  <img src="docs/images/hero_banner.gif" alt="Project Aegis Hero — City simulation in action" width="800">
-  <br/>
-  <sub><i>Real-time 3D epidemic simulation with 400 autonomous agents</i></sub>
-</p>
+<img width="640" height="360" alt="Overview" src="https://github.com/user-attachments/assets/9f95e5d0-574f-4d2d-a784-c2248c6ee28c" />
 
 </div>
 
@@ -55,15 +51,6 @@ This problem requires the development of a system that simulates a population as
 - A central decision-making entity allocates limited resources (e.g., vaccines, testing, restrictions).
 
 The objective is to design an **adaptive decision engine** capable of continuously observing partial and imperfect outbreak data, making intervention decisions under uncertainty and constraints, and minimizing infection spread, fatalities, and system overload.
-
-<!-- 🔽 SCREENSHOT — Replace with screenshot of the problem context or infographic -->
-<p align="center">
- <img width="598" height="420" alt="image" src="https://github.com/user-attachments/assets/a9c5bbec-fd75-4869-a2f4-f1f0f163b02b" />
-
-https://github.com/user-attachments/assets/bcbcf888-7b5f-4a61-85c7-9cccc6408383
-
-
-</p>
 
 ---
 
@@ -224,7 +211,8 @@ $$m_i = \begin{cases} 0.5 & \text{if } a_i < 12 \text{ (children)} \\ 2.5 & \tex
 | ⚫ Black | **Dead** | Deceased — agent stops moving permanently |
 
 <!-- 🔽 GIF — Replace with a recording showing color transitions during an outbreak -->
-![giphy-ezgif com-gif-maker](https://github.com/user-attachments/assets/24561cee-98bc-4097-b64e-e80e4956daa6)
+<img width="522" height="464" alt="color transition" src="https://github.com/user-attachments/assets/2a8d2482-22e8-44f8-a428-6893b0f8b67c" />
+
 
 ### 📊 Simulation Parameters
 
