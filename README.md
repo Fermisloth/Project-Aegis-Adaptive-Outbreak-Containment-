@@ -77,13 +77,6 @@ Static models fall short during live, evolving crises. We need tools that treat 
 
 ### ⚙️ How are we building it?
 We leverage **Unity (URP)** for high-performance 3D visualization and mathematical tracking, combined with a **Python Reinforcement Learning** backend that trains an AI "Governor" to learn optimal paths for deploying limited interventions under shifting constraints.
-
-<!-- 🔽 SCREENSHOT — Replace with a wide shot of the running simulation -->
-<p align="center">
- <img width="1599" height="754" alt="image" src="https://github.com/user-attachments/assets/7d005abb-1137-4dc9-8e69-89fb5da1d74b" />
-  <sub><i>400 agents navigating a procedurally generated city with buildings, barriers, and grid-based streets</i></sub>
-</p>
-
 ---
 
 ## 🏗️ System Architecture
@@ -276,19 +269,9 @@ The simulation provides three real-time policy actions, each with a budget cost:
 | 🏥 **Quarantine** | $800 | 15s | All Infectious agents are forced into nearby buildings; healthy agents move freely |
 
 <!-- 🔽 GIF — Replace with a recording of clicking Lockdown → agents freeze → agents resume -->
-<p align="center">
-  <img src="docs/images/lockdown_demo.gif" alt="Lockdown demo — agents freeze and resume" width="600">
-  <br/>
-  <sub><i>Lockdown in action — agents halt, timer counts down, movement resumes automatically</i></sub>
-</p>
-
+https://github.com/user-attachments/assets/5da98797-6ccc-40cb-b903-c46ff10f2689
 <!-- 🔽 GIF — Replace with a recording of clicking Quarantine → red agents move to buildings -->
-<p align="center">
-  <img src="docs/images/quarantine_demo.gif" alt="Quarantine demo — infected agents sent to buildings" width="600">
-  <br/>
-  <sub><i>Quarantine enforcement — infectious (red) agents are routed to buildings while healthy agents roam freely</i></sub>
-</p>
-
+https://github.com/user-attachments/assets/870a2afd-fe22-46f9-ac60-ac18179bd98a
 ---
 
 ## 🧩 Code Highlights
@@ -390,11 +373,10 @@ public void SendToBuilding()
 
 <!-- 🔽 SCREENSHOT — Replace with screenshot of the Dashboard HUD in action -->
 <p align="center">
-  <img src="docs/images/dashboard_hud.png" alt="Dashboard HUD — live telemetry" width="800">
+  <img src="[docs/images/dashboard_hud.png](https://github.com/user-attachments/assets/a6de9708-5257-4b7a-9547-dc49f126eafd)" alt="Dashboard HUD — live telemetry" width="800">
   <br/>
   <sub><i>Dashboard HUD showing budget, hospital occupancy, epidemic bar graph, and action buttons</i></sub>
 </p>
-
 ---
 
 ## 🔮 What's Next?
@@ -408,8 +390,11 @@ public void SendToBuilding()
 
 <div align="center">
 
-<!-- 🔽 SCREENSHOT — Replace with a final beauty shot of the full simulation -->
-<img src="docs/images/final_shot.png" alt="Final simulation beauty shot" width="800">
+<!-- 🔽 SCREENSHOT — Replace with a wide shot of the running simulation -->
+<p align="center">
+ <img width="1599" height="754" alt="image" src="https://github.com/user-attachments/assets/7d005abb-1137-4dc9-8e69-89fb5da1d74b" />
+  <sub><i>400 agents navigating a procedurally generated city with buildings, barriers, and grid-based streets</i></sub>
+</p>
 
 **Made with ❤️ for #ROVOTINKERQUEST**
 
