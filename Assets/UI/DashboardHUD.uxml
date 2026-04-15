@@ -30,6 +30,13 @@
         </ui:VisualElement>
         
         <ui:VisualElement class="actions-panel">
+            <ui:Label text="Lockdown Duration:" class="stat-label" style="margin-top: 5px; margin-bottom: 3px;" />
+            <ui:VisualElement name="lockdownDurationGroup" class="duration-group">
+                <ui:Button name="btnDuration5" text="5s" class="duration-btn duration-btn-active" />
+                <ui:Button name="btnDuration10" text="10s" class="duration-btn" />
+                <ui:Button name="btnDuration20" text="20s" class="duration-btn" />
+                <ui:Button name="btnDuration30" text="30s" class="duration-btn" />
+            </ui:VisualElement>
             <ui:Button name="btnLockdown" text="Enforce Lockdown ($500)" class="action-btn" />
             <ui:Button name="btnVaccinate" text="Mass Vaccination ($50/agent)" class="action-btn" />
             <ui:Button name="btnQuarantine" text="Enforce Quarantine ($800)" class="action-btn" />
@@ -44,5 +51,10 @@
         <ui:Label name="bigLblI" text="Infectious: 0" class="num-label" style="color: red;" />
         <ui:Label name="bigLblQ" text="Quarantined: 0" class="num-label" style="color: #4a90e2;" />
         <ui:Label name="bigLblR" text="Recovered: 0" class="num-label" style="color: gray;" />
+    </ui:VisualElement>
+
+    <!-- Temporary overlay message for action feedback -->
+    <ui:VisualElement name="OverlayMessage" class="overlay-message" style="display: none;">
+        <ui:Label name="overlayText" text="" class="overlay-text" />
     </ui:VisualElement>
 </ui:UXML>

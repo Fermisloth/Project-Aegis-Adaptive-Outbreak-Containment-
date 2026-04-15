@@ -11,7 +11,7 @@
       "hash": "61521a26b7a85c67ef18d99f802f9ae5d154a3a1"
     },
     "com.ivanmurzak.unity.mcp": {
-      "version": "0.63.3",
+      "version": "0.63.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

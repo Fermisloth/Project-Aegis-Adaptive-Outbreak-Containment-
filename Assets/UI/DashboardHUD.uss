@@ -96,3 +96,59 @@
     margin-top: 10px;
     -unity-text-align: middle-left;
 }
+
+/* === Lockdown Duration Selector === */
+.duration-group {
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.duration-btn {
+    flex-grow: 1;
+    background-color: #1e1e2e;
+    color: #aaaaaa;
+    border-width: 1px;
+    border-color: #444;
+    border-radius: 4px;
+    padding: 6px 2px;
+    margin: 0 2px;
+    -unity-font-style: bold;
+    font-size: 13px;
+    -unity-text-align: middle-center;
+}
+
+.duration-btn:hover {
+    background-color: #2a2a3e;
+    border-color: #6688cc;
+}
+
+.duration-btn-active {
+    background-color: #2b5797;
+    color: white;
+    border-color: #4dc2f8;
+    border-width: 2px;
+}
+
+/* === Temporary Overlay Message === */
+.overlay-message {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    translate: -50% -50%;
+    background-color: rgba(0, 0, 0, 0.88);
+    border-radius: 14px;
+    padding: 24px 48px;
+    justify-content: center;
+    align-items: center;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.overlay-text {
+    font-size: 26px;
+    -unity-font-style: bold;
+    color: white;
+    -unity-text-align: middle-center;
+    white-space: normal;
+}

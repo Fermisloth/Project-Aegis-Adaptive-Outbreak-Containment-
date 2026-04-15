@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity#main",
-    "com.ivanmurzak.unity.mcp": "0.63.3",
+    "com.ivanmurzak.unity.mcp": "0.63.4",
     "com.ivanmurzak.unity.mcp.animation": "1.1.21",
     "com.ivanmurzak.unity.mcp.particlesystem": "1.0.48",
     "com.ivanmurzak.unity.mcp.probuilder": "1.0.60",

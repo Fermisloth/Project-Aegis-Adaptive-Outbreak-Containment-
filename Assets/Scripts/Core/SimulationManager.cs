@@ -21,8 +21,13 @@ public class SimulationManager : MonoBehaviour
     public float lockdownTimer = 0f;
     public float quarantineTimer = 0f;
 
+    // Selected lockdown duration in seconds (default 5s)
+    public float selectedLockdownDuration = 5f;
+
     public Action OnTick;
     public Action<int> OnBudgetChanged;
+    // Fired when an action is executed with a display message
+    public Action<string> OnActionMessage;
     
     private void Awake()
     {
@@ -64,6 +69,7 @@ public class SimulationManager : MonoBehaviour
                     if(mov) mov.SetLockdown(false);
                 }
                 Debug.Log("Lockdown Ended.");
+                OnActionMessage?.Invoke("Lockdown Ended");
             }
         }
 
@@ -78,6 +84,7 @@ public class SimulationManager : MonoBehaviour
                     if (mov) mov.ReleaseFromBuilding();
                 }
                 Debug.Log("Quarantine Ended.");
+                OnActionMessage?.Invoke("Quarantine Ended");
             }
         }
 
@@ -135,14 +142,19 @@ public class SimulationManager : MonoBehaviour
             remainingBudget -= cost;
             OnBudgetChanged?.Invoke((int)remainingBudget);
             
-            lockdownTimer = 10f; // 10 seconds duration
+            lockdownTimer = selectedLockdownDuration;
             
             foreach (var agent in model.agents)
             {
                 var mov = agent.GetComponent<Movement>();
                 if(mov) mov.SetLockdown(true);
             }
-            Debug.Log("Lockdown Enforced!");
+            Debug.Log($"Lockdown Enforced for {selectedLockdownDuration}s!");
+            OnActionMessage?.Invoke($"Lockdown Enforced ({selectedLockdownDuration}s)");
+        }
+        else
+        {
+            OnActionMessage?.Invoke("Not enough budget for Lockdown!");
         }
     }
     
@@ -150,6 +162,7 @@ public class SimulationManager : MonoBehaviour
     {
         // Vaccinate up to 10 random susceptible per call
         int count = 10; 
+        int vaccinated = 0;
         foreach (var agent in model.agents)
         {
             if (count <= 0) break;
@@ -160,11 +173,13 @@ public class SimulationManager : MonoBehaviour
                     remainingBudget -= config.costVaccination;
                     agent.ChangeState(InfectionState.Removed); // Removed = Immune/Vaccinated
                     count--;
+                    vaccinated++;
                 }
             }
         }
         OnBudgetChanged?.Invoke((int)remainingBudget);
         Debug.Log("Vaccination applied to random agents.");
+        OnActionMessage?.Invoke($"Vaccinated {vaccinated} Agents");
     }
 
     public void EnforceQuarantine()
@@ -187,6 +202,11 @@ public class SimulationManager : MonoBehaviour
                 }
             }
             Debug.Log("Quarantine Enforced!");
+            OnActionMessage?.Invoke("Quarantine Enforced (15s)");
+        }
+        else
+        {
+            OnActionMessage?.Invoke("Not enough budget for Quarantine!");
         }
     }
 }

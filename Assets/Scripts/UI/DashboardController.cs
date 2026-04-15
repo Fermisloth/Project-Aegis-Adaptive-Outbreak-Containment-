@@ -16,6 +16,15 @@ public class DashboardController : MonoBehaviour
     private VisualElement barS, barE, barI, barQ, barR;
     private Button btnLockdown, btnVaccinate, btnQuarantine, btnReset;
 
+    // Lockdown duration buttons
+    private Button btnDuration5, btnDuration10, btnDuration20, btnDuration30;
+    private Button activeDurationBtn;
+
+    // Overlay message
+    private VisualElement overlayMessage;
+    private Label overlayText;
+    private Coroutine overlayCoroutine;
+
     private void Start()
     {
         uiDocument = GetComponent<UIDocument>();
@@ -53,18 +62,97 @@ public class DashboardController : MonoBehaviour
         btnQuarantine = root.Q<Button>("btnQuarantine");
         btnReset = root.Q<Button>("btnReset");
 
+        // Fetch Lockdown Duration Buttons
+        btnDuration5 = root.Q<Button>("btnDuration5");
+        btnDuration10 = root.Q<Button>("btnDuration10");
+        btnDuration20 = root.Q<Button>("btnDuration20");
+        btnDuration30 = root.Q<Button>("btnDuration30");
+
+        // Fetch Overlay
+        overlayMessage = root.Q<VisualElement>("OverlayMessage");
+        overlayText = root.Q<Label>("overlayText");
+
         if (manager == null) manager = FindAnyObjectByType<SimulationManager>();
 
         if (manager != null)
         {
             manager.OnTick += UpdateTelemetry;
+            manager.OnActionMessage += ShowOverlayMessage;
             
             // Setup Button Listeners
             if (btnLockdown != null) btnLockdown.clicked += () => manager.ExecuteAction(1);
             if (btnVaccinate != null) btnVaccinate.clicked += () => manager.ExecuteAction(2);
             if (btnQuarantine != null) btnQuarantine.clicked += () => manager.ExecuteAction(3);
             if (btnReset != null) btnReset.clicked += () => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            // Setup Duration Button Listeners
+            SetupDurationButton(btnDuration5, 5f);
+            SetupDurationButton(btnDuration10, 10f);
+            SetupDurationButton(btnDuration20, 20f);
+            SetupDurationButton(btnDuration30, 30f);
+
+            // Default: 5s is active
+            activeDurationBtn = btnDuration5;
+            manager.selectedLockdownDuration = 5f;
         }
+    }
+
+    private void SetupDurationButton(Button btn, float duration)
+    {
+        if (btn == null) return;
+        btn.clicked += () =>
+        {
+            // Remove active class from previous
+            if (activeDurationBtn != null)
+                activeDurationBtn.RemoveFromClassList("duration-btn-active");
+
+            // Set new active
+            btn.AddToClassList("duration-btn-active");
+            activeDurationBtn = btn;
+
+            // Update manager
+            if (manager != null)
+                manager.selectedLockdownDuration = duration;
+        };
+    }
+
+    private void ShowOverlayMessage(string message)
+    {
+        if (overlayMessage == null || overlayText == null) return;
+
+        overlayText.text = message;
+        overlayMessage.style.display = DisplayStyle.Flex;
+        overlayMessage.style.opacity = 1f;
+
+        // Cancel previous fade if any
+        if (overlayCoroutine != null)
+            StopCoroutine(overlayCoroutine);
+
+        overlayCoroutine = StartCoroutine(FadeOutOverlay());
+    }
+
+    private IEnumerator FadeOutOverlay()
+    {
+        // Show for 1.5 seconds
+        yield return new WaitForSeconds(1.5f);
+
+        // Fade out over 0.5 seconds
+        float fadeDuration = 0.5f;
+        float elapsed = 0f;
+        while (elapsed < fadeDuration)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsed / fadeDuration);
+            if (overlayMessage != null)
+                overlayMessage.style.opacity = alpha;
+            yield return null;
+        }
+
+        // Hide completely
+        if (overlayMessage != null)
+            overlayMessage.style.display = DisplayStyle.None;
+
+        overlayCoroutine = null;
     }
 
     private void UpdateTelemetry()
@@ -98,6 +186,15 @@ public class DashboardController : MonoBehaviour
             if (barI != null) barI.style.width = new Length((manager.countI / total) * 100f, LengthUnit.Percent);
             if (barQ != null) barQ.style.width = new Length((manager.countQ / total) * 100f, LengthUnit.Percent);
             if (barR != null) barR.style.width = new Length((manager.countR / total) * 100f, LengthUnit.Percent);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (manager != null)
+        {
+            manager.OnTick -= UpdateTelemetry;
+            manager.OnActionMessage -= ShowOverlayMessage;
         }
     }
 }
