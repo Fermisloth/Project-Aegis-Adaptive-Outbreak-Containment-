@@ -373,7 +373,7 @@ public void SendToBuilding()
 
 <!-- 🔽 SCREENSHOT — Replace with screenshot of the Dashboard HUD in action -->
 <p align="center">
-  <img src="[docs/images/dashboard_hud.png](https://github.com/user-attachments/assets/a6de9708-5257-4b7a-9547-dc49f126eafd)" alt="Dashboard HUD — live telemetry" width="800">
+  <img src="https://github.com/user-attachments/assets/a6de9708-5257-4b7a-9547-dc49f126eafd" alt="Dashboard HUD — live telemetry" width="800">
   <br/>
   <sub><i>Dashboard HUD showing budget, hospital occupancy, epidemic bar graph, and action buttons</i></sub>
 </p>
