@@ -14,6 +14,13 @@ Project Aegis: Adaptive outbreak containment for #ROVOTINKERQUEST. Employs Hiera
   <em>Deciding how to intervene effectively under real-world constraints—when every second counts.</em>
 </p>
 
+<!-- 🔽 HERO IMAGE / GIF — Replace with actual screenshot or recording -->
+<p align="center">
+  <img src="docs/images/hero_banner.gif" alt="Project Aegis Hero — City simulation in action" width="800">
+  <br/>
+  <sub><i>Real-time 3D epidemic simulation with 400 autonomous agents</i></sub>
+</p>
+
 </div>
 
 ---
@@ -28,6 +35,10 @@ Project Aegis: Adaptive outbreak containment for #ROVOTINKERQUEST. Employs Hiera
 - [Tech Stack](#-tech-stack)
 - [How to Run](#-how-to-run)
 - [What's Next?](#-whats-next)
+- [Agent Color Legend](#-agent-color-legend)
+- [Simulation Parameters](#-simulation-parameters)
+- [Policy Interventions](#-policy-interventions)
+- [Code Highlights](#-code-highlights)
 
 ---
 
@@ -45,6 +56,11 @@ This problem requires the development of a system that simulates a population as
 
 The objective is to design an **adaptive decision engine** capable of continuously observing partial and imperfect outbreak data, making intervention decisions under uncertainty and constraints, and minimizing infection spread, fatalities, and system overload.
 
+<!-- 🔽 SCREENSHOT — Replace with screenshot of the problem context or infographic -->
+<p align="center">
+  <img src="docs/images/problem_context.png" alt="Problem Statement Infographic" width="700">
+</p>
+
 ---
 
 ## 🎯 About the Project
@@ -57,6 +73,13 @@ Static models fall short during live, evolving crises. We need tools that treat 
 
 ### ⚙️ How are we building it?
 We leverage **Unity (URP)** for high-performance 3D visualization and mathematical tracking, combined with a **Python Reinforcement Learning** backend that trains an AI "Governor" to learn optimal paths for deploying limited interventions under shifting constraints.
+
+<!-- 🔽 SCREENSHOT — Replace with a wide shot of the running simulation -->
+<p align="center">
+  <img src="docs/images/simulation_overview.png" alt="Simulation Overview — City with agents" width="800">
+  <br/>
+  <sub><i>400 agents navigating a procedurally generated city with buildings, barriers, and grid-based streets</i></sub>
+</p>
 
 ---
 
@@ -87,6 +110,15 @@ graph TD
     CONF -->|Sets Infection/Mortality Rates| SIM
 ```
 
+| Layer | Technology | Role |
+|---|---|---|
+| **3D Simulation** | Unity 6 (URP) + C# | Agent movement, city generation, visual rendering |
+| **Disease Engine** | `SEIQRModel.cs` | Stochastic SEIQR compartmental transitions |
+| **Demographics** | `HealthState.cs` | Age, gender, susceptibility & mortality multipliers |
+| **Dashboard UI** | UI Toolkit (UXML/USS) | Real-time telemetry, bar graph, action buttons |
+| **RL Brain** | Python + Stable Baselines3 | PPO-based Governor for automated policy decisions |
+| **Bridge** | Socket / REST API | Telemetry pipeline between Unity ↔ Python |
+
 ---
 
 ## 🦠 Disease Model (SEIR-DV)
@@ -114,7 +146,107 @@ stateDiagram-v2
     Q --> D: Hospitalized Mortality
 ```
 
+### 📐 Governing Differential Equations
+
+The continuous-time SEIQRD compartmental model is governed by the following system of ordinary differential equations (ODEs). Let $N = S + E + I + Q + R + D$ denote the total population:
+
+$$\frac{dS}{dt} = -\beta \cdot \frac{S \cdot I}{N} - \nu \cdot S$$
+
+$$\frac{dE}{dt} = \beta \cdot \frac{S \cdot I}{N} - \sigma \cdot E$$
+
+$$\frac{dI}{dt} = \sigma \cdot E - (\gamma + \delta_q) \cdot I$$
+
+$$\frac{dQ}{dt} = \delta_q \cdot I - \gamma \cdot Q$$
+
+$$\frac{dR}{dt} = \gamma \cdot (1 - \mu) \cdot (I + Q) + \nu \cdot S$$
+
+$$\frac{dD}{dt} = \gamma \cdot \mu \cdot (I + Q)$$
+
+#### Variable Definitions
+
+| Symbol | Name | Description |
+|---|---|---|
+| $S(t)$ | Susceptible | Population not yet exposed to the pathogen |
+| $E(t)$ | Exposed | Infected but not yet contagious (latent period) |
+| $I(t)$ | Infectious | Actively contagious, can transmit to nearby $S$ agents |
+| $Q(t)$ | Quarantined | Isolated (in hospital/building), reduced contact rate |
+| $R(t)$ | Recovered | Immune after recovery or vaccination |
+| $D(t)$ | Dead | Deceased, permanently removed from the simulation |
+| $\beta$ | Transmission rate | Per-contact probability of $S \rightarrow E$ transition |
+| $\sigma$ | Incubation rate | Rate of $E \rightarrow I$ progression |
+| $\gamma$ | Recovery rate | Rate of $I \rightarrow R$ or $Q \rightarrow R$ transition |
+| $\delta_q$ | Quarantine rate | Rate of organic $I \rightarrow Q$ self-isolation |
+| $\mu$ | Mortality rate | Probability of death upon recovery attempt |
+| $\nu$ | Vaccination rate | Rate of $S \rightarrow R$ via policy intervention |
+| $N$ | Total population | $S + E + I + Q + R + D$ (constant) |
+
+### 🎲 Stochastic Discrete-Time Implementation
+
+In practice, the simulation does **not** solve the ODEs numerically. Instead, it uses a **stochastic agent-based** approach where each agent independently undergoes probabilistic state transitions every fixed timestep $\Delta t$:
+
+**Transmission** — For each susceptible agent $i$ with $C_i$ infectious contacts within radius $r$:
+
+$$P(S_i \rightarrow E_i) = 1 - (1 - \beta)^{\,C_i \cdot \Delta t} \;\times\; \alpha_i$$
+
+where $\alpha_i$ is the agent's age-dependent **susceptibility multiplier**.
+
+**Incubation** — Each exposed agent transitions to infectious:
+
+$$P(E_i \rightarrow I_i) = \sigma \cdot \Delta t$$
+
+**Recovery & Mortality** — Each infectious or quarantined agent first rolls for recovery, then for death:
+
+$$P(I_i \rightarrow \text{resolved}) = \gamma \cdot \Delta t$$
+
+$$\text{If resolved: } P(\text{Death}) = \mu \cdot m_i, \quad P(\text{Recovery}) = 1 - \mu \cdot m_i$$
+
+where $m_i$ is the agent's age-dependent **mortality multiplier**.
+
+**Organic Quarantine** — Infectious agents may self-quarantine:
+
+$$P(I_i \rightarrow Q_i) = \delta_q \cdot \Delta t$$
+
+### 👥 Demographic Modifier Functions
+
+Agent risk profiles are assigned based on age $a_i$:
+
+$$\alpha_i = \begin{cases} 1.5 & \text{if } a_i < 12 \text{ (children)} \\ 1.8 & \text{if } a_i > 65 \text{ (seniors)} \\ 1.0 & \text{otherwise (adults)} \end{cases}$$
+
+$$m_i = \begin{cases} 0.5 & \text{if } a_i < 12 \text{ (children)} \\ 2.5 & \text{if } a_i > 65 \text{ (seniors)} \\ 1.0 & \text{otherwise (adults)} \end{cases}$$
+
 **Demographic Modifiers**: Not all agents are equal. The system generates populations with varied ages and genders. Seniors (65+) face a heavily multiplied mortality risk ($$2.5x$$), while children act as highly susceptible latency vectors.
+
+### 🎨 Agent Color Legend
+
+| Color | State | Description |
+|---|---|---|
+| 🟢 Vivid Green | **Susceptible** | Healthy, can be infected on contact |
+| 🟡 Yellow-Orange | **Exposed** | Infected but not yet contagious (incubating) |
+| 🔴 Red | **Infectious** | Actively contagious, spreads to nearby agents |
+| 🔵 Blue | **Quarantined** | Isolated in a building, reduced transmission |
+| ⚪ Grey | **Recovered** | Immune after recovery or vaccination |
+| ⚫ Black | **Dead** | Deceased — agent stops moving permanently |
+
+<!-- 🔽 GIF — Replace with a recording showing color transitions during an outbreak -->
+<p align="center">
+  <img src="docs/images/color_transitions.gif" alt="Agent color transitions during outbreak" width="600">
+  <br/>
+  <sub><i>Agents transition through SEIQR states — watch green → yellow → red → grey/black</i></sub>
+</p>
+
+### 📊 Simulation Parameters
+
+| Parameter | Symbol | Default | Description |
+|---|---|---|---|
+| Transmission Rate | β | `0.8` | Probability of infection per contact per tick |
+| Incubation Rate | σ | `0.4` | Rate of Exposed → Infectious transition |
+| Recovery Rate | γ | `0.05` | Rate of Infectious → Recovered transition |
+| Quarantine Rate | δ | `0.02` | Organic self-quarantine probability |
+| Mortality Rate | — | `0.05` | Base death probability (modified by demographics) |
+| Interaction Radius | — | `2.0` | Distance (units) within which infection can spread |
+| Initial Infected | — | `5` | Number of "patient zero" agents at simulation start |
+| Initial Budget | — | `$5000` | Starting budget for policy interventions |
+| Hospital Capacity | — | `50` | Max quarantined agents the hospital can hold |
 
 ---
 
@@ -132,14 +264,123 @@ stateDiagram-v2
 - **The Problem:** Initially, the city grid generated massive, dense arrays of physical skyscrapers that obscured the agents, making it chaotic to debug transmission waves.
 - **The Solution:** We restricted physical building generation strictly to the perimeter of the field, clearing out a spacious "central plateau" for observation. We further reworked shader colors mapping to the disease states (e.g., Susceptible is neon green, Infectious is pure red, Dead is pitch black), ensuring outbreaks are visually distinct the absolute second they emerge.
 
+<!-- 🔽 SCREENSHOTS — Replace with before/after shots of visual clarity improvements -->
+<p align="center">
+  <img src="docs/images/milestone_visual_before.png" alt="Before — cluttered city" width="380">
+  &nbsp;&nbsp;
+  <img src="docs/images/milestone_visual_after.png" alt="After — clean central plateau" width="380">
+  <br/>
+  <sub><i>Left: Early cluttered layout — Right: Final design with perimeter buildings and clear observation area</i></sub>
+</p>
+
+---
+
+## 🛡️ Policy Interventions
+
+The simulation provides three real-time policy actions, each with a budget cost:
+
+| Action | Cost | Duration | Effect |
+|---|---|---|---|
+| 🔒 **Lockdown** | $500 | 5 / 10 / 20 / 30s (selectable) | All agents freeze in place for the chosen duration, then resume |
+| 💉 **Mass Vaccination** | $50/agent | Instant | Up to 10 random Susceptible agents become Recovered (immune) |
+| 🏥 **Quarantine** | $800 | 15s | All Infectious agents are forced into nearby buildings; healthy agents move freely |
+
+<!-- 🔽 GIF — Replace with a recording of clicking Lockdown → agents freeze → agents resume -->
+<p align="center">
+  <img src="docs/images/lockdown_demo.gif" alt="Lockdown demo — agents freeze and resume" width="600">
+  <br/>
+  <sub><i>Lockdown in action — agents halt, timer counts down, movement resumes automatically</i></sub>
+</p>
+
+<!-- 🔽 GIF — Replace with a recording of clicking Quarantine → red agents move to buildings -->
+<p align="center">
+  <img src="docs/images/quarantine_demo.gif" alt="Quarantine demo — infected agents sent to buildings" width="600">
+  <br/>
+  <sub><i>Quarantine enforcement — infectious (red) agents are routed to buildings while healthy agents roam freely</i></sub>
+</p>
+
+---
+
+## 🧩 Code Highlights
+
+### Disease Transmission Logic (`SEIQRModel.cs`)
+
+```csharp
+// Stochastic transmission — each susceptible agent checks nearby infectious contacts
+if (agent.CurrentState == InfectionState.Susceptible)
+{
+    int contactCount = CountInfectiousContacts(agent);
+    if (contactCount > 0)
+    {
+        float transmissionProb = 1f - Mathf.Pow(1f - config.transmissionRate, dt * contactCount);
+        transmissionProb *= agent.SusceptibilityMultiplier; // Age-based modifier
+        if (Random.value < transmissionProb)
+            agent.ChangeState(InfectionState.Exposed);
+    }
+}
+```
+
+### Demographic Assignment (`HealthState.cs`)
+
+```csharp
+// Kids (under 12) and Seniors (over 65) have modified risk profiles
+Age = Random.Range(5, 90);
+AgentGender = (Random.value > 0.5f) ? Gender.Male : Gender.Female;
+
+if (Age < 12) {
+    SusceptibilityMultiplier = 1.5f;
+    MortalityMultiplier = 0.5f;
+} else if (Age > 65) {
+    SusceptibilityMultiplier = 1.8f;
+    MortalityMultiplier = 2.5f;  // Seniors face 2.5x mortality risk
+}
+```
+
+### Temporary Lockdown with Auto-Release (`SimulationManager.cs`)
+
+```csharp
+// Lockdown automatically lifts after the timer expires
+if (lockdownTimer > 0)
+{
+    lockdownTimer -= Time.fixedDeltaTime;
+    if (lockdownTimer <= 0)
+    {
+        foreach (var agent in model.agents)
+        {
+            var mov = agent.GetComponent<Movement>();
+            if (mov) mov.SetLockdown(false);
+        }
+        Debug.Log("Lockdown Ended.");
+    }
+}
+```
+
+### Quarantine — Send Infected to Buildings (`Movement.cs`)
+
+```csharp
+public void SendToBuilding()
+{
+    if (CityMapGenerator.BuildingPositions != null && CityMapGenerator.BuildingPositions.Count > 0)
+    {
+        targetPosition = CityMapGenerator.BuildingPositions[Random.Range(0, CityMapGenerator.BuildingPositions.Count)];
+        isQuarantinedInBuilding = true;
+        moveXAxis = Random.value > 0.5f;
+    }
+}
+```
+
 ---
 
 ## 💻 Tech Stack
 
-- **Game Engine:** Unity 6 (Universal Render Pipeline)
-- **Programming Languages:** C# and Python
-- **AI / Machine Learning:** Stable Baselines3 (PPO), OpenAI Gym / Gymnasium
-- **Math Modeling:** Numerical ODE Integration (Euler's Method)
+| Category | Technology |
+|---|---|
+| **Game Engine** | Unity 6 (Universal Render Pipeline) |
+| **Languages** | C# (simulation & UI), Python (RL training) |
+| **AI / ML** | Stable Baselines3 (PPO), OpenAI Gym / Gymnasium |
+| **Math Modeling** | Numerical ODE Integration (Euler's Method) |
+| **UI Framework** | Unity UI Toolkit (UXML + USS) |
+| **Architecture** | ScriptableObject config, Modular component-based agents |
 
 ---
 
@@ -157,9 +398,29 @@ stateDiagram-v2
 3. Run the training script: `python train_governor.py`
 4. The Python environment will establish a connection with the running Unity simulation and begin taking actions (Vaccinate, Lockdown) over thousands of episodes to minimize the outbreak!
 
+<!-- 🔽 SCREENSHOT — Replace with screenshot of the Dashboard HUD in action -->
+<p align="center">
+  <img src="docs/images/dashboard_hud.png" alt="Dashboard HUD — live telemetry" width="800">
+  <br/>
+  <sub><i>Dashboard HUD showing budget, hospital occupancy, epidemic bar graph, and action buttons</i></sub>
+</p>
+
 ---
 
 ## 🔮 What's Next?
 - **Graph Neural Networks (GNNs):** Rather than modeling contacts purely by physical proximity, we plan to implement a GNN backend to model familial and workspace topologies.
 - **Waning Immunity:** Introducing a temporal decay to the Recovered and Vaccinated states to simulate seasonal re-infections.
 - **Extended Hospital Logistics:** Constraining actual physical beds and tracking intensive care utilization independently of general quarantine protocols.
+- **Multi-City Networks:** Simulating inter-city travel with separate population clusters connected by transit links.
+- **Contact Tracing:** Logging agent interaction history to enable targeted retroactive quarantine strategies.
+
+---
+
+<div align="center">
+
+<!-- 🔽 SCREENSHOT — Replace with a final beauty shot of the full simulation -->
+<img src="docs/images/final_shot.png" alt="Final simulation beauty shot" width="800">
+
+**Made with ❤️ for #ROVOTINKERQUEST**
+
+</div>
