@@ -256,10 +256,8 @@ The simulation provides three real-time policy actions, each with a budget cost:
 | 💉 **Mass Vaccination** | $50/agent | Instant | Up to 10 random Susceptible agents become Recovered (immune) |
 | 🏥 **Quarantine** | $800 | 15s | All Infectious agents are forced into nearby buildings; healthy agents move freely |
 
-<!-- 🔽 GIF — Replace with a recording of clicking Lockdown → agents freeze → agents resume -->
-https://github.com/user-attachments/assets/5da98797-6ccc-40cb-b903-c46ff10f2689
-<!-- 🔽 GIF — Replace with a recording of clicking Quarantine → red agents move to buildings -->
-https://github.com/user-attachments/assets/870a2afd-fe22-46f9-ac60-ac18179bd98a
+<img width="360" height="640" alt="Lockdown" src="https://github.com/user-attachments/assets/2f251127-927e-4807-8e56-0cdb0b8fd410" />
+
 ---
 
 ## 🧩 Code Highlights
