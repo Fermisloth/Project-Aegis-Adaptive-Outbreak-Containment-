@@ -98,8 +98,16 @@ InitTestScene*.unity*
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
 
-# AI Agent metadata
+# Editor plugin cache & local tooling
 .agent/
+.antigravityignore
+.gemini/
+.github/copilot/
+.copilot/
+.cursor/
+.aider*
+.cline/
+.continue/
 
 # Python Virtual environments & Cache
 __pycache__/
@@ -108,3 +116,6 @@ __pycache__/
 venv/
 .venv/
 .env
+
+# Temp debug output
+output*.txt
